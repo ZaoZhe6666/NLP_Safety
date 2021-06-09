@@ -1,0 +1,14 @@
+logger:
+  level: debug
+
+model: model.module.ResNet2
+
+attack:
+  method: CLEAN
+  config_path: config/attack/FGSM.yaml
+  model_path: model/checkpoint/resnet20_cifar10_clean_new.pt
+  
+  clean:
+    data_path: dataset/cifar10/cifar10_test_data.npy
+    label_path: dataset/cifar10/cifar10_test_label.npy
+    batch_size: 64  # default=64

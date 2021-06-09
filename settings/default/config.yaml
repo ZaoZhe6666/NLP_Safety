@@ -1,0 +1,76 @@
+logger:
+  level: debug
+
+model: VGG16()
+
+defense:
+  method: Vanilla
+  config_path: config/defense/Vanilla.yaml
+
+  train:
+    data_path: dataset/cifar10/cifar10_train_data.npy
+    label_path: dataset/cifar10/cifar10_train_label.npy
+    # transform:  default=None
+    
+    batch_size: 64  # default=64
+    shuffle: True  # default=False
+
+  valid:
+    mode: split
+    # if mode == specify:
+    data_path: dataset/cifar10/cifar10_test_data.npy
+    label_path: dataset/cifar10/cifar10_test_label.npy
+    # if mode == split:
+    percent: 0.1  # default=0.1
+
+    batch_size: 64 # default=64
+
+  save_interval: -1  # default=-1
+  # save_path: default=settings/default/
+  save_best: True # default=True
+
+  epoch: 100
+  # model_path:  default=None
+  optimizer:
+    class: SGD
+    # path:  default=None
+    args:
+      lr: 0.01
+      momentum: 0.9
+      weight_decay: 0.0005
+  scheduler: 
+    class: StepLR
+    # path:  default=None
+    args:
+      step_size: 30
+      gamma: 0.1
+  
+
+attack:
+  method: CLEAN
+  config_path: config/attack/FGSM.yaml
+  model_path: settings/default/param_final.pth
+  
+  clean:
+    data_path: dataset/cifar10/cifar10_test_data.npy
+    label_path: dataset/cifar10/cifar10_test_label.npy
+    batch_size: 64  # default=64
+
+  # adv:
+  #   data_path: dataset/cifar10/vgg16_cifar10_fgsm_data.npy
+  #   label_path: dataset/cifar10/vgg16_cifar10_fgsm_label.npy  # NOT ground truth!
+
+
+evaluate:
+  method: ACC
+  model_path: settings/default/param_final.pth
+  model_defense: VGG16()
+  model_defense_path: settings/default/param_final.pth
+  clean:
+    data_path: dataset/cifar10/cifar10_test_data.npy
+    label_path: dataset/cifar10/cifar10_test_label.npy
+    batch_size: 64  # default=64
+  adv:
+    data_path: dataset/cifar10/cifar10_test_data.npy
+    label_path: dataset/cifar10/cifar10_test_label.npy    # NOT ground truth!
+    batch_size: 64  # default=64
