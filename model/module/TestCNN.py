@@ -40,7 +40,7 @@ class TextCNN(nn.Module):
         return out
 def getModel():
     vec_dim = 300
-    filter_num = 100 # 卷积核个数
+    filter_num = 100 # 每种卷积核个数
     sentence_max_size = 300 # 每篇文章最大词数量
     label_size = 2
     kernel_list = [3, 4, 5] # 卷积核大小

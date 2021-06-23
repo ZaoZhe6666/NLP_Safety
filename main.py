@@ -143,25 +143,6 @@ def generate_tensor(sentence, sentence_max_size, embedding, word2id):
                 tensor[index] = vector
     return tensor.unsqueeze(0)  # tensor是二维的，必须扩充为三维，否则会报错
 
-
-def train_textcnn_model(net, train_loader, epoch, lr):
-    print("begin training")
-    net.train()  # 必备，将模型设置为训练模式
-    optimizer = optim.Adam(net.parameters(), lr=lr)
-    criterion = nn.CrossEntropyLoss()
-    for i in range(epoch):  # 多批次循环
-        for batch_idx, (data, target) in enumerate(train_loader):
-            optimizer.zero_grad()  # 清除所有优化的梯度
-            output = net(data)  # 传入数据并前向传播获取输出
-            loss = criterion(output, target)
-            loss.backward()
-            optimizer.step()
-
-            # 打印状态信息
-            print("train epoch=" + str(i) + ",batch_id=" + str(batch_idx) + ",loss=" + str(loss.item() / 64))
-    print('Finished Training')
-
-
 def textcnn_model_test(net, test_loader):
     net.eval()  # 必备，将模型设置为训练模式
     correct = 0
@@ -176,9 +157,10 @@ def textcnn_model_test(net, test_loader):
             total += label.size(0)
             correct += (predicted == label).sum().item()
             print('Accuracy of the network on test set: %d %%' % (100 * correct / total))
-            print(predicted)
-            print("=================================================")
-            print(label)
+            with open('result.txt', 'a') as f:
+                f.write(predicted)
+                f.write(label)
+                f.write("=================================")
             # test_acc += accuracy_score(torch.argmax(outputs.data, dim=1), label)
             # print("test_acc=" + str(test_acc))
 
@@ -190,13 +172,7 @@ if __name__ == "__main__":
     stopwords_dir = "dataset/stopwords.txt"  # 停用词
     word2vec_dir = "C:/Users/DoubleDog/Desktop/aisafe/dataset/glove.model.6B.300d.txt"  # 训练好的词向量文件,写成相对路径好像会报错
     net_dir = "model/checkpoint/IMDB_TextCNN_model.pkl"
-    sentence_max_size = 300  # 每篇文章的最大词数量
     batch_size = 64
-    filter_num = 100  # 每种卷积核的个数
-    epoch = 8  # 迭代次数
-    kernel_list = [3, 4, 5]  # 卷积核的大小
-    label_size = 2
-    lr = 0.001
     # 读取停用表
     print("读取停用表")
     stopwords = load_stopwords(stopwords_dir)
